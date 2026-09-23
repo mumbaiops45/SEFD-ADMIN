@@ -33,9 +33,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-1 flex-col md:flex-row">
+    <div className="flex h-screen flex-1 flex-col overflow-hidden md:flex-row">
       {/* Left brand panel — secondary theme color */}
-      <div className="relative hidden flex-1 flex-col justify-center overflow-hidden bg-navy px-12 py-16 text-white md:flex lg:px-20">
+      <div className="relative hidden flex-1 flex-col justify-center overflow-hidden bg-navy px-12 py-10 text-white md:flex lg:px-20">
         <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-orange/20 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 -left-16 h-96 w-96 rounded-full bg-navy-soft/60 blur-3xl" />
         <div
@@ -69,7 +69,7 @@ export default function LoginPage() {
             users — in a single fast admin panel.
           </p>
 
-          <ul className="mt-10 space-y-3">
+          <ul className="mt-6 space-y-3">
             {FEATURES.map((f) => (
               <li key={f} className="flex items-center gap-3 text-sm text-white/80">
                 <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange/20 text-orange-soft">
@@ -85,9 +85,9 @@ export default function LoginPage() {
       </div>
 
       {/* Right sign-in panel */}
-      <div className="flex flex-1 items-center justify-center bg-white px-6 py-16">
+      <div className="flex flex-1 items-center justify-center overflow-y-auto bg-white px-6 py-8">
         <div className="w-full max-w-sm">
-          <div className="mb-8 flex items-center gap-3 md:hidden">
+          <div className="mb-6 flex items-center gap-3 md:hidden">
             <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange text-base font-bold text-navy">
               S
             </span>

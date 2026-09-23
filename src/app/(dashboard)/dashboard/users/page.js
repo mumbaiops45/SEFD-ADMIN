@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { api } from "@/lib/api";
 import DataTable from "@/components/DataTable";
 import Modal from "@/components/Modal";
+import DetailView from "@/components/DetailView";
 
 const columns = [
   { key: "name", label: "Name" },
@@ -163,16 +164,7 @@ export default function UsersPage() {
 
       {modal?.mode === "view" && (
         <Modal title="User details" onClose={() => setModal(null)} wide>
-          <dl className="space-y-2 text-sm">
-            {Object.entries(modal.row).map(([key, value]) => (
-              <div key={key} className="flex gap-3 border-b border-zinc-100 py-1.5">
-                <dt className="w-36 shrink-0 font-medium text-zinc-500">{key}</dt>
-                <dd className="wrap-break-word text-zinc-700">
-                  {typeof value === "object" ? JSON.stringify(value) : String(value)}
-                </dd>
-              </div>
-            ))}
-          </dl>
+          <DetailView data={modal.row} />
         </Modal>
       )}
     </div>

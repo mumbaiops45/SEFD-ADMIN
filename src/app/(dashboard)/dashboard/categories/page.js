@@ -4,6 +4,8 @@ import { useEffect, useState, useCallback } from "react";
 import { api } from "@/lib/api";
 import DataTable from "@/components/DataTable";
 import Modal from "@/components/Modal";
+import ConfirmDialog from "@/components/ConfirmDialog";
+import DetailView from "@/components/DetailView";
 
 const slugify = (s) =>
   s
@@ -144,6 +146,8 @@ export default function CategoriesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [modal, setModal] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -174,13 +178,23 @@ export default function CategoriesPage() {
     load();
   };
 
-  const handleDelete = async (row) => {
-    if (!confirm(`Delete category "${row.name}"? This cannot be undone.`)) return;
+  const handleDelete = (row) => {
+    setError("");
+    setConfirmDelete(row);
+  };
+
+  const confirmDeleteCategory = async () => {
+    if (!confirmDelete) return;
+    setDeleting(true);
     try {
-      await api.del(`/category/${row._id}`);
+      await api.del(`/category/${confirmDelete._id}`);
+      setConfirmDelete(null);
       load();
     } catch (err) {
-      alert(err.message);
+      setError(err.message);
+      setConfirmDelete(null);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -233,18 +247,19 @@ export default function CategoriesPage() {
 
       {modal?.mode === "view" && (
         <Modal title="Category details" onClose={() => setModal(null)} wide>
-          <dl className="space-y-2 text-sm">
-            {Object.entries(modal.row).map(([key, value]) => (
-              <div key={key} className="flex gap-3 border-b border-zinc-100 py-1.5">
-                <dt className="w-36 shrink-0 font-medium text-zinc-500">{key}</dt>
-                <dd className="wrap-break-word text-zinc-700">
-                  {typeof value === "object" ? JSON.stringify(value) : String(value)}
-                </dd>
-              </div>
-            ))}
-          </dl>
+          <DetailView data={modal.row} />
         </Modal>
       )}
+
+      <ConfirmDialog
+        open={!!confirmDelete}
+        title="Delete category?"
+        message={confirmDelete ? `Delete category "${confirmDelete.name}"? This cannot be undone.` : ""}
+        confirmLabel="Delete"
+        loading={deleting}
+        onCancel={() => setConfirmDelete(null)}
+        onConfirm={confirmDeleteCategory}
+      />
     </div>
   );
 }

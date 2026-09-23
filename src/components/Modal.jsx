@@ -12,7 +12,7 @@ export default function Modal({ title, onClose, children, wide }) {
           <h2 className="text-base font-semibold text-tertiary">{title}</h2>
           <button
             onClick={onClose}
-            className="rounded-md p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700"
+            className="rounded-md bg-orange p-1.5 text-navy transition-colors hover:bg-orange-deep"
           >
             ✕
           </button>

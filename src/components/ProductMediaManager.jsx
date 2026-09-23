@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { api } from "@/lib/api";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 export default function ProductMediaManager({ productId }) {
   const [media, setMedia] = useState([]);
@@ -10,6 +11,8 @@ export default function ProductMediaManager({ productId }) {
   const [file, setFile] = useState(null);
   const [isPrimary, setIsPrimary] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -57,17 +60,27 @@ export default function ProductMediaManager({ productId }) {
       await api.put(`/productMedia/${item._id}`, fd);
       load();
     } catch (err) {
-      alert(err.message);
+      setError(err.message);
     }
   };
 
-  const handleDelete = async (item) => {
-    if (!confirm("Delete this image?")) return;
+  const handleDelete = (item) => {
+    setError("");
+    setConfirmDelete(item);
+  };
+
+  const confirmDeleteImage = async () => {
+    if (!confirmDelete) return;
+    setDeleting(true);
     try {
-      await api.del(`/productMedia/${item._id}`);
+      await api.del(`/productMedia/${confirmDelete._id}`);
+      setConfirmDelete(null);
       load();
     } catch (err) {
-      alert(err.message);
+      setError(err.message);
+      setConfirmDelete(null);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -140,6 +153,16 @@ export default function ProductMediaManager({ productId }) {
           {uploading ? "Uploading…" : "Add image"}
         </button>
       </form>
+
+      <ConfirmDialog
+        open={!!confirmDelete}
+        title="Delete image?"
+        message="This image will be permanently removed from the product."
+        confirmLabel="Delete"
+        loading={deleting}
+        onCancel={() => setConfirmDelete(null)}
+        onConfirm={confirmDeleteImage}
+      />
     </div>
   );
 }

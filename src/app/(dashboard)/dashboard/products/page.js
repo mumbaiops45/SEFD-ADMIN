@@ -4,6 +4,8 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { api } from "@/lib/api";
 import DataTable from "@/components/DataTable";
 import Modal from "@/components/Modal";
+import ConfirmDialog from "@/components/ConfirmDialog";
+import DetailView from "@/components/DetailView";
 import ProductMediaManager from "@/components/ProductMediaManager";
 
 const slugify = (s) =>
@@ -208,6 +210,8 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [modal, setModal] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const categoryMap = useMemo(() => {
     const m = {};
@@ -272,21 +276,30 @@ export default function ProductsPage() {
     load(page);
   };
 
-  const handleDelete = async (row) => {
-    if (!confirm(`Delete product "${row.name}"? This also deletes all of its images and cannot be undone.`))
-      return;
+  const handleDelete = (row) => {
+    setError("");
+    setConfirmDelete(row);
+  };
+
+  const confirmDeleteProduct = async () => {
+    if (!confirmDelete) return;
+    setDeleting(true);
     try {
-      const mediaRes = await api.get(`/productMedia/${row._id}`);
+      const mediaRes = await api.get(`/productMedia/${confirmDelete._id}`);
       const media = mediaRes?.data?.productMedia || [];
       await Promise.all(media.map((m) => api.del(`/productMedia/${m._id}`)));
-      await api.del(`/product/${row._id}`);
+      await api.del(`/product/${confirmDelete._id}`);
+      setConfirmDelete(null);
       if (rows.length === 1 && page > 1) {
         setPage(page - 1);
       } else {
         load(page);
       }
     } catch (err) {
-      alert(err.message);
+      setError(err.message);
+      setConfirmDelete(null);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -363,18 +376,23 @@ export default function ProductsPage() {
 
       {modal?.mode === "view" && (
         <Modal title="Product details" onClose={() => setModal(null)} wide>
-          <dl className="space-y-2 text-sm">
-            {Object.entries(modal.row).map(([key, value]) => (
-              <div key={key} className="flex gap-3 border-b border-zinc-100 py-1.5">
-                <dt className="w-36 shrink-0 font-medium text-zinc-500">{key}</dt>
-                <dd className="wrap-break-word text-zinc-700">
-                  {typeof value === "object" ? JSON.stringify(value) : String(value)}
-                </dd>
-              </div>
-            ))}
-          </dl>
+          <DetailView data={modal.row} />
         </Modal>
       )}
+
+      <ConfirmDialog
+        open={!!confirmDelete}
+        title="Delete product?"
+        message={
+          confirmDelete
+            ? `Delete product "${confirmDelete.name}"? This also deletes all of its images and cannot be undone.`
+            : ""
+        }
+        confirmLabel="Delete"
+        loading={deleting}
+        onCancel={() => setConfirmDelete(null)}
+        onConfirm={confirmDeleteProduct}
+      />
     </div>
   );
 }

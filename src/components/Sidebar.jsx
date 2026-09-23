@@ -33,12 +33,20 @@ const ICONS = {
       <path d="M19 14.9c1.9.5 3.3 2 3.9 4.1" />
     </svg>
   ),
+  carts: (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4.5 w-4.5" stroke="currentColor" strokeWidth="1.8">
+      <path d="M3 4.5h2.2l1 3M6.2 7.5 8 15h9.5l1.8-7.5H6.2Z" />
+      <circle cx="9.5" cy="19" r="1.3" />
+      <circle cx="16.5" cy="19" r="1.3" />
+    </svg>
+  ),
 };
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
-  { href: "/dashboard/products", label: "Products", icon: "products" },
   { href: "/dashboard/categories", label: "Categories", icon: "categories" },
+  { href: "/dashboard/products", label: "Products", icon: "products" },
+  { href: "/dashboard/carts", label: "Abandoned Cart", icon: "carts" },
   { href: "/dashboard/users", label: "Users", icon: "users" },
 ];
 
