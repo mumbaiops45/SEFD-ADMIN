@@ -40,12 +40,26 @@ const ICONS = {
       <circle cx="16.5" cy="19" r="1.3" />
     </svg>
   ),
+  orders: (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4.5 w-4.5" stroke="currentColor" strokeWidth="1.8">
+      <rect x="4.5" y="3.5" width="15" height="17" rx="1.5" />
+      <path d="M8 8h8M8 12h8M8 16h5" />
+    </svg>
+  ),
+  payments: (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4.5 w-4.5" stroke="currentColor" strokeWidth="1.8">
+      <rect x="2.5" y="5.5" width="19" height="13" rx="2" />
+      <path d="M2.5 10h19M6.5 15h3" />
+    </svg>
+  ),
 };
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
   { href: "/dashboard/categories", label: "Categories", icon: "categories" },
   { href: "/dashboard/products", label: "Products", icon: "products" },
+  { href: "/dashboard/orders", label: "Orders", icon: "orders" },
+  { href: "/dashboard/payments", label: "Payments", icon: "payments" },
   { href: "/dashboard/carts", label: "Abandoned Cart", icon: "carts" },
   { href: "/dashboard/users", label: "Users", icon: "users" },
 ];
