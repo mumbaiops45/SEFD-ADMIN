@@ -7,6 +7,7 @@ import {
   ORDER_STATUSES,
   PAYMENT_STATUSES,
   orderNumber,
+  userIdOf,
   formatLabel,
   formatMoney,
   formatDate,
@@ -196,23 +197,32 @@ export default function OrdersPage() {
               <span className="block text-xs font-medium text-zinc-500">Razorpay Payment ID</span>
               <span className="font-mono text-xs text-navy">{modal.razorpayPaymentId || "—"}</span>
             </div>
-            <div className="col-span-2">
-              <span className="block text-xs font-medium text-zinc-500">Shipping Address</span>
-              <span className="text-navy">
-                {[
-                  modal.shippingAddress?.name,
-                  modal.shippingAddress?.phone,
-                  modal.shippingAddress?.address,
-                  modal.shippingAddress?.landmark,
-                  modal.shippingAddress?.city,
-                  modal.shippingAddress?.state,
-                  modal.shippingAddress?.pincode,
-                  modal.shippingAddress?.country,
-                ]
-                  .filter(Boolean)
-                  .join(", ")}
-              </span>
+          </div>
+
+          <div className="mb-4 overflow-hidden rounded-md border border-zinc-200 text-sm">
+            <div className="bg-zinc-50 px-3 py-2 text-xs font-medium uppercase text-zinc-500">
+              Customer &amp; Shipping Address
             </div>
+            <dl className="divide-y divide-zinc-100">
+              {[
+                ["orderId", modal._id],
+                ["userId", userIdOf(modal)],
+                ["name", modal.shippingAddress?.name],
+                ["phone", modal.shippingAddress?.phone],
+                ["email", modal.shippingAddress?.email],
+                ["address", modal.shippingAddress?.address],
+                ["landmark", modal.shippingAddress?.landmark],
+                ["city", modal.shippingAddress?.city],
+                ["state", modal.shippingAddress?.state],
+                ["pincode", modal.shippingAddress?.pincode],
+                ["country", modal.shippingAddress?.country],
+              ].map(([key, value]) => (
+                <div key={key} className="grid grid-cols-3 gap-3 px-3 py-2">
+                  <dt className="font-mono text-xs text-zinc-500">{key}</dt>
+                  <dd className="col-span-2 break-all font-medium text-navy">{value || "—"}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
 
           <div className="overflow-hidden rounded-md border border-zinc-200">

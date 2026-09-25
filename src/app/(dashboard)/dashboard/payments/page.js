@@ -26,8 +26,7 @@ export default function PaymentsPage() {
     setLoading(true);
     setError("");
     try {
-      const params = { page, limit: LIMIT };
-      if (paymentStatus) params.paymentStatus = paymentStatus;
+      const params = { page, limit: LIMIT, paymentStatus };
       const res = await api.get("/order", { params });
       setRows(extractOrders(res));
     } catch (err) {
@@ -47,21 +46,22 @@ export default function PaymentsPage() {
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-xl font-semibold text-tertiary">Payments</h1>
-        <select
-          value={paymentStatus}
-          onChange={(e) => {
-            setPaymentStatus(e.target.value);
-            setPage(1);
-          }}
-          className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-navy"
-        >
-          <option value="">All payment status</option>
+        <div className="flex gap-1 rounded-lg border border-zinc-200 bg-white p-1">
           {PAYMENT_STATUSES.map((s) => (
-            <option key={s} value={s}>
+            <button
+              key={s}
+              onClick={() => {
+                setPaymentStatus(s);
+                setPage(1);
+              }}
+              className={`rounded-md px-4 py-1.5 text-sm font-semibold transition-colors ${
+                paymentStatus === s ? "bg-orange text-navy shadow-sm" : "text-zinc-600 hover:bg-zinc-100"
+              }`}
+            >
               {formatLabel(s)}
-            </option>
+            </button>
           ))}
-        </select>
+        </div>
       </div>
 
       <div className="mb-4 inline-block rounded-lg bg-navy px-4 py-3 text-white">

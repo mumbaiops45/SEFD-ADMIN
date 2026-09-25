@@ -10,8 +10,10 @@ export const ORDER_STATUSES = [
 
 export const PAYMENT_STATUSES = ["UNPAID", "PAID", "REFUNDED"];
 
-// Unique, human-readable order number derived from the Mongo _id
-export const orderNumber = (order) => `#ORD-${String(order?._id || "").slice(-8).toUpperCase()}`;
+// Full Mongo _id used as the unique order number
+export const orderNumber = (order) => String(order?._id || "");
+
+export const userIdOf = (order) => String(order?.user?._id || order?.user || "");
 
 export const formatLabel = (s) => (s ? s.replace(/_/g, " ") : "—");
 
