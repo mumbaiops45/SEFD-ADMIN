@@ -1,5 +1,7 @@
 "use client";
 
+import { Eye, Pencil, Trash2 } from "lucide-react";
+
 export default function DataTable({ columns, rows, idField, onView, onEdit, onDelete }) {
   if (!rows.length) {
     return (
@@ -10,8 +12,8 @@ export default function DataTable({ columns, rows, idField, onView, onEdit, onDe
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-zinc-200">
-      <table className="w-full text-left text-sm">
+    <div className="card-table-wrap overflow-x-auto rounded-lg border border-zinc-200">
+      <table className="card-table w-full text-left text-sm">
         <thead className="bg-zinc-50 text-xs uppercase text-zinc-500">
           <tr>
             {columns.map((col) => (
@@ -26,34 +28,40 @@ export default function DataTable({ columns, rows, idField, onView, onEdit, onDe
           {rows.map((row) => (
             <tr key={row[idField]} className="hover:bg-zinc-50">
               {columns.map((col) => (
-                <td key={col.key} className="px-4 py-3 text-zinc-700">
+                <td key={col.key} data-label={col.label} className="px-4 py-3 text-zinc-700">
                   {col.render ? col.render(row) : String(row[col.key] ?? "")}
                 </td>
               ))}
-              <td className="px-4 py-3">
+              <td data-label="Actions" className="px-4 py-3">
                 <div className="flex justify-end gap-2">
                   {onView && (
                     <button
                       onClick={() => onView(row)}
-                      className="rounded-md px-2.5 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-100"
+                      title="View"
+                      aria-label="View"
+                      className="rounded-md p-1.5 text-zinc-600 hover:bg-zinc-100"
                     >
-                      View
+                      <Eye className="h-4 w-4" />
                     </button>
                   )}
                   {onEdit && (
                     <button
                       onClick={() => onEdit(row)}
-                      className="rounded-md bg-orange/10 px-2.5 py-1 text-xs font-semibold text-orange-deep hover:bg-orange/20"
+                      title="Edit"
+                      aria-label="Edit"
+                      className="rounded-md bg-orange/10 p-1.5 text-orange-deep hover:bg-orange/20"
                     >
-                      Edit
+                      <Pencil className="h-4 w-4" />
                     </button>
                   )}
                   {onDelete && (
                     <button
                       onClick={() => onDelete(row)}
-                      className="rounded-md bg-tertiary/10 px-2.5 py-1 text-xs font-semibold text-tertiary hover:bg-tertiary/20"
+                      title="Delete"
+                      aria-label="Delete"
+                      className="rounded-md bg-tertiary/10 p-1.5 text-tertiary hover:bg-tertiary/20"
                     >
-                      Delete
+                      <Trash2 className="h-4 w-4" />
                     </button>
                   )}
                 </div>

@@ -2,7 +2,7 @@
 
 export default function Modal({ title, onClose, children, wide }) {
   return (
-    <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 p-4">
+    <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 p-2 sm:p-4">
       <div
         className={`max-h-[90vh] w-full ${
           wide ? "max-w-2xl" : "max-w-md"
@@ -17,7 +17,7 @@ export default function Modal({ title, onClose, children, wide }) {
             ✕
           </button>
         </div>
-        <div className="p-5">{children}</div>
+        <div className="p-4 sm:p-5">{children}</div>
       </div>
     </div>
   );

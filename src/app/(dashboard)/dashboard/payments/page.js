@@ -80,8 +80,8 @@ export default function PaymentsPage() {
           No payments found.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-zinc-200">
-          <table className="w-full text-left text-sm">
+        <div className="card-table-wrap overflow-x-auto rounded-lg border border-zinc-200">
+          <table className="card-table w-full text-left text-sm">
             <thead className="bg-zinc-50 text-xs uppercase text-zinc-500">
               <tr>
                 <th className="px-4 py-3 font-medium">Order No.</th>
@@ -97,22 +97,22 @@ export default function PaymentsPage() {
             <tbody className="divide-y divide-zinc-100">
               {rows.map((o) => (
                 <tr key={o._id} className="hover:bg-zinc-50">
-                  <td className="px-4 py-3 font-mono font-bold text-navy">{orderNumber(o)}</td>
-                  <td className="px-4 py-3 text-zinc-700">{o.shippingAddress?.name || "—"}</td>
-                  <td className="px-4 py-3 font-bold text-navy">{formatMoney(o.total)}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-zinc-600">
+                  <td data-label="Order No." className="px-4 py-3 font-mono font-bold text-navy">{orderNumber(o)}</td>
+                  <td data-label="Customer" className="px-4 py-3 text-zinc-700">{o.shippingAddress?.name || "—"}</td>
+                  <td data-label="Amount" className="px-4 py-3 font-bold text-navy">{formatMoney(o.total)}</td>
+                  <td data-label="Razorpay Order ID" className="px-4 py-3 font-mono text-xs text-zinc-600">
                     {o.razorpayOrderId || "—"}
                   </td>
-                  <td className="px-4 py-3 font-mono text-xs text-zinc-600">
+                  <td data-label="Razorpay Payment ID" className="px-4 py-3 font-mono text-xs text-zinc-600">
                     {o.razorpayPaymentId || "—"}
                   </td>
-                  <td className="px-4 py-3">
+                  <td data-label="Payment" className="px-4 py-3">
                     <StatusBadge value={o.paymentStatus} />
                   </td>
-                  <td className="px-4 py-3">
+                  <td data-label="Order Status" className="px-4 py-3">
                     <StatusBadge value={o.status} />
                   </td>
-                  <td className="px-4 py-3 text-xs text-zinc-500">{formatDate(o.updatedAt)}</td>
+                  <td data-label="Date" className="px-4 py-3 text-xs text-zinc-500">{formatDate(o.updatedAt)}</td>
                 </tr>
               ))}
             </tbody>

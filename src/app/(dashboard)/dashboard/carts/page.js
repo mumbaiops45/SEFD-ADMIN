@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { api } from "@/lib/api";
+import { Eye } from "lucide-react";
 import Modal from "@/components/Modal";
 
 function ItemsPreview({ items }) {
@@ -49,7 +50,7 @@ export default function CartsPage() {
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-xl font-semibold text-tertiary">Abandoned Cart</h1>
       </div>
 
@@ -64,8 +65,8 @@ export default function CartsPage() {
           No carts yet.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-zinc-200">
-          <table className="w-full text-left text-sm">
+        <div className="card-table-wrap overflow-x-auto rounded-lg border border-zinc-200">
+          <table className="card-table w-full text-left text-sm">
             <thead className="bg-zinc-50 text-xs uppercase text-zinc-500">
               <tr>
                 <th className="px-4 py-3 font-medium">User</th>
@@ -77,18 +78,20 @@ export default function CartsPage() {
             <tbody className="divide-y divide-zinc-100">
               {rows.map((cart) => (
                 <tr key={cart._id} className="hover:bg-zinc-50">
-                  <td className="px-4 py-3 font-medium text-navy">{cart.user?.name || "—"}</td>
-                  <td className="px-4 py-3 text-zinc-700">{cart.user?.phone || "—"}</td>
-                  <td className="px-4 py-3 text-zinc-700">
+                  <td data-label="User" className="px-4 py-3 font-medium text-navy">{cart.user?.name || "—"}</td>
+                  <td data-label="Mobile Number" className="px-4 py-3 text-zinc-700">{cart.user?.phone || "—"}</td>
+                  <td data-label="Cart Items" className="px-4 py-3 text-zinc-700">
                     <ItemsPreview items={cart.items} />
                   </td>
-                  <td className="px-4 py-3">
+                  <td data-label="Actions" className="px-4 py-3">
                     <div className="flex justify-end">
                       <button
                         onClick={() => setModal(cart)}
-                        className="rounded-md px-2.5 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-100"
+                        title="View"
+                        aria-label="View"
+                        className="rounded-md p-1.5 text-zinc-600 hover:bg-zinc-100"
                       >
-                        View
+                        <Eye className="h-4 w-4" />
                       </button>
                     </div>
                   </td>
@@ -101,7 +104,7 @@ export default function CartsPage() {
 
       {modal && (
         <Modal title={`${modal.user?.name || "User"}'s cart`} onClose={() => setModal(null)} wide>
-          <div className="mb-4 grid grid-cols-2 gap-3 rounded-md bg-navy/5 p-3 text-sm">
+          <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-md bg-navy/5 p-3 text-sm">
             <div>
               <span className="block text-xs font-medium text-zinc-500">Name</span>
               <span className="font-bold text-navy">{modal.user?.name || "—"}</span>
@@ -115,8 +118,8 @@ export default function CartsPage() {
           {!modal.items?.length ? (
             <p className="text-sm text-zinc-500">This cart is empty.</p>
           ) : (
-            <div className="overflow-hidden rounded-md border border-zinc-200">
-              <table className="w-full text-left text-sm">
+            <div className="card-table-wrap overflow-hidden rounded-md border border-zinc-200">
+              <table className="card-table w-full text-left text-sm">
                 <thead className="bg-zinc-50 text-xs uppercase text-zinc-500">
                   <tr>
                     <th className="px-3 py-2 font-medium">Product</th>
@@ -128,16 +131,16 @@ export default function CartsPage() {
                 <tbody className="divide-y divide-zinc-100">
                   {modal.items.map((it, i) => (
                     <tr key={it._id || i}>
-                      <td className="px-3 py-2 font-bold text-navy">
+                      <td data-label="Product" className="px-3 py-2 font-bold text-navy">
                         {it.product?.name || "Unknown product"}
                       </td>
-                      <td className="px-3 py-2 text-zinc-700">₹{it.product?.price ?? "—"}</td>
-                      <td className="px-3 py-2">
+                      <td data-label="Price" className="px-3 py-2 text-zinc-700">₹{it.product?.price ?? "—"}</td>
+                      <td data-label="Qty" className="px-3 py-2">
                         <span className="rounded bg-orange px-2 py-0.5 text-xs font-bold text-navy">
                           {it.quantity}
                         </span>
                       </td>
-                      <td className="px-3 py-2 font-bold text-navy">
+                      <td data-label="Subtotal" className="px-3 py-2 font-bold text-navy">
                         {it.product?.price ? `₹${it.product.price * it.quantity}` : "—"}
                       </td>
                     </tr>

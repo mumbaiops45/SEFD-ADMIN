@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { api } from "@/lib/api";
+import { Eye } from "lucide-react";
 import Modal from "@/components/Modal";
 import {
   ORDER_STATUSES,
@@ -115,8 +116,8 @@ export default function OrdersPage() {
           No orders found.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-zinc-200">
-          <table className="w-full text-left text-sm">
+        <div className="card-table-wrap overflow-x-auto rounded-lg border border-zinc-200">
+          <table className="card-table w-full text-left text-sm">
             <thead className="bg-zinc-50 text-xs uppercase text-zinc-500">
               <tr>
                 <th className="px-4 py-3 font-medium">Order No.</th>
@@ -132,29 +133,31 @@ export default function OrdersPage() {
             <tbody className="divide-y divide-zinc-100">
               {rows.map((o) => (
                 <tr key={o._id} className="hover:bg-zinc-50">
-                  <td className="px-4 py-3 font-mono font-bold text-navy">{orderNumber(o)}</td>
-                  <td className="px-4 py-3 text-zinc-700">
+                  <td data-label="Order No." className="px-4 py-3 font-mono font-bold text-navy">{orderNumber(o)}</td>
+                  <td data-label="Customer" className="px-4 py-3 text-zinc-700">
                     <div className="font-medium text-navy">{o.shippingAddress?.name || "—"}</div>
                     <div className="text-xs text-zinc-500">{o.shippingAddress?.phone}</div>
                   </td>
-                  <td className="px-4 py-3 text-zinc-700">
+                  <td data-label="Items" className="px-4 py-3 text-zinc-700">
                     {o.items?.reduce((n, it) => n + it.quantity, 0) || 0}
                   </td>
-                  <td className="px-4 py-3 font-bold text-navy">{formatMoney(o.total)}</td>
-                  <td className="px-4 py-3">
+                  <td data-label="Total" className="px-4 py-3 font-bold text-navy">{formatMoney(o.total)}</td>
+                  <td data-label="Status" className="px-4 py-3">
                     <StatusBadge value={o.status} />
                   </td>
-                  <td className="px-4 py-3">
+                  <td data-label="Payment" className="px-4 py-3">
                     <StatusBadge value={o.paymentStatus} />
                   </td>
-                  <td className="px-4 py-3 text-xs text-zinc-500">{formatDate(o.createdAt)}</td>
-                  <td className="px-4 py-3">
+                  <td data-label="Date" className="px-4 py-3 text-xs text-zinc-500">{formatDate(o.createdAt)}</td>
+                  <td data-label="Actions" className="px-4 py-3">
                     <div className="flex justify-end">
                       <button
                         onClick={() => setModal(o)}
-                        className="rounded-md px-2.5 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-100"
+                        title="View"
+                        aria-label="View"
+                        className="rounded-md p-1.5 text-zinc-600 hover:bg-zinc-100"
                       >
-                        View
+                        <Eye className="h-4 w-4" />
                       </button>
                     </div>
                   </td>
@@ -169,7 +172,7 @@ export default function OrdersPage() {
 
       {modal && (
         <Modal title={`Order ${orderNumber(modal)}`} onClose={() => setModal(null)} wide>
-          <div className="mb-4 grid grid-cols-2 gap-3 rounded-md bg-navy/5 p-3 text-sm">
+          <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-md bg-navy/5 p-3 text-sm">
             <div>
               <span className="block text-xs font-medium text-zinc-500">Order Status</span>
               <select
@@ -225,8 +228,8 @@ export default function OrdersPage() {
             </dl>
           </div>
 
-          <div className="overflow-hidden rounded-md border border-zinc-200">
-            <table className="w-full text-left text-sm">
+          <div className="card-table-wrap overflow-hidden rounded-md border border-zinc-200">
+            <table className="card-table w-full text-left text-sm">
               <thead className="bg-zinc-50 text-xs uppercase text-zinc-500">
                 <tr>
                   <th className="px-3 py-2 font-medium">Product</th>
@@ -239,15 +242,15 @@ export default function OrdersPage() {
               <tbody className="divide-y divide-zinc-100">
                 {modal.items?.map((it, i) => (
                   <tr key={i}>
-                    <td className="px-3 py-2 font-bold text-navy">{it.name}</td>
-                    <td className="px-3 py-2 font-mono text-xs text-zinc-600">{it.sku}</td>
-                    <td className="px-3 py-2 text-zinc-700">{formatMoney(it.price)}</td>
-                    <td className="px-3 py-2">
+                    <td data-label="Product" className="px-3 py-2 font-bold text-navy">{it.name}</td>
+                    <td data-label="SKU" className="px-3 py-2 font-mono text-xs text-zinc-600">{it.sku}</td>
+                    <td data-label="Price" className="px-3 py-2 text-zinc-700">{formatMoney(it.price)}</td>
+                    <td data-label="Qty" className="px-3 py-2">
                       <span className="rounded bg-orange px-2 py-0.5 text-xs font-bold text-navy">
                         {it.quantity}
                       </span>
                     </td>
-                    <td className="px-3 py-2 font-bold text-navy">
+                    <td data-label="Subtotal" className="px-3 py-2 font-bold text-navy">
                       {formatMoney(it.price * it.quantity)}
                     </td>
                   </tr>

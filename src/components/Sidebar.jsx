@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Truck } from "lucide-react";
 
 const ICONS = {
   dashboard: (
@@ -46,6 +47,7 @@ const ICONS = {
       <path d="M8 8h8M8 12h8M8 16h5" />
     </svg>
   ),
+  shipping: <Truck className="h-4.5 w-4.5" strokeWidth={1.8} />,
   payments: (
     <svg viewBox="0 0 24 24" fill="none" className="h-4.5 w-4.5" stroke="currentColor" strokeWidth="1.8">
       <rect x="2.5" y="5.5" width="19" height="13" rx="2" />
@@ -60,20 +62,30 @@ const NAV = [
   { href: "/dashboard/products", label: "Products", icon: "products" },
   { href: "/dashboard/orders", label: "Orders", icon: "orders" },
   { href: "/dashboard/payments", label: "Payments", icon: "payments" },
+  { href: "/dashboard/shipping", label: "Shipping", icon: "shipping" },
   { href: "/dashboard/carts", label: "Abandoned Cart", icon: "carts" },
   { href: "/dashboard/users", label: "Users", icon: "users" },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ open, onClose }) {
   const pathname = usePathname();
 
   return (
-    <aside className="flex w-60 shrink-0 flex-col bg-navy text-white">
+    <>
+    {open && <div onClick={onClose} className="fixed inset-0 z-40 bg-black/40 md:hidden" />}
+    <aside
+      className={`fixed inset-y-0 left-0 z-50 flex w-60 shrink-0 flex-col bg-navy text-white transition-transform md:static md:translate-x-0 ${
+        open ? "translate-x-0" : "-translate-x-full"
+      }`}
+    >
       <div className="flex h-16 items-center gap-2 border-b border-white/10 px-5">
         <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange text-sm font-bold text-navy">
           S
         </span>
         <span className="text-lg font-semibold tracking-tight">SFED Admin</span>
+        <button onClick={onClose} className="ml-auto rounded-md p-1 text-white/70 hover:bg-white/10 md:hidden" aria-label="Close menu">
+          ✕
+        </button>
       </div>
       <nav className="flex-1 space-y-1 p-3">
         {NAV.map((item) => {
@@ -83,6 +95,7 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={onClose}
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                 active ? "bg-orange text-navy shadow-sm" : "text-white/70 hover:bg-white/10 hover:text-white"
               }`}
@@ -95,5 +108,6 @@ export default function Sidebar() {
       </nav>
       <div className="border-t border-white/10 p-4 text-xs text-white/40">SFED Store · Admin</div>
     </aside>
+    </>
   );
 }
