@@ -71,6 +71,7 @@ export default function CartsPage() {
               <tr>
                 <th className="px-4 py-3 font-medium">User</th>
                 <th className="px-4 py-3 font-medium">Mobile Number</th>
+                <th className="px-4 py-3 font-medium">Email</th>
                 <th className="px-4 py-3 font-medium">Cart Items</th>
                 <th className="px-4 py-3 text-right font-medium">Actions</th>
               </tr>
@@ -80,6 +81,7 @@ export default function CartsPage() {
                 <tr key={cart._id} className="hover:bg-zinc-50">
                   <td data-label="User" className="px-4 py-3 font-medium text-navy">{cart.user?.name || "—"}</td>
                   <td data-label="Mobile Number" className="px-4 py-3 text-zinc-700">{cart.user?.phone || "—"}</td>
+                  <td data-label="Email" className="break-all px-4 py-3 text-zinc-700">{cart.user?.email || "—"}</td>
                   <td data-label="Cart Items" className="px-4 py-3 text-zinc-700">
                     <ItemsPreview items={cart.items} />
                   </td>
@@ -112,6 +114,10 @@ export default function CartsPage() {
             <div>
               <span className="block text-xs font-medium text-zinc-500">Mobile Number</span>
               <span className="font-bold text-navy">{modal.user?.phone || "—"}</span>
+            </div>
+            <div className="sm:col-span-2">
+              <span className="block text-xs font-medium text-zinc-500">Email</span>
+              <span className="break-all font-bold text-navy">{modal.user?.email || "—"}</span>
             </div>
           </div>
 
