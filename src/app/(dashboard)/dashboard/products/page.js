@@ -239,6 +239,7 @@ export default function ProductsPage() {
   const PAGE_SIZE = 8;
   const [page, setPage] = useState(1);
   const [keyword, setKeyword] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
 
   const handleSearch = useCallback((k) => {
     setKeyword(k);
@@ -251,7 +252,7 @@ export default function ProductsPage() {
     try {
       const [productRes, categoryRes] = await Promise.all([
         api.get("/product", {
-          params: { page: pageNum, limit: PAGE_SIZE, ...(keyword ? { keyword } : {}) },
+          params: { page: pageNum, limit: PAGE_SIZE, ...(keyword ? { keyword } : {}), ...(categoryFilter ? { category: categoryFilter } : {}) },
         }),
         api.get("/category"),
       ]);
@@ -262,7 +263,7 @@ export default function ProductsPage() {
     } finally {
       setLoading(false);
     }
-  }, [keyword]);
+  }, [keyword, categoryFilter]);
 
   useEffect(() => {
     load(page);
@@ -317,12 +318,32 @@ export default function ProductsPage() {
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-xl font-semibold text-tertiary">Products</h1>
         <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:flex-nowrap">
+          <select
+            value={categoryFilter}
+            onChange={(e) => {
+              setCategoryFilter(e.target.value);
+              setPage(1);
+            }}
+            className="h-11 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-navy shadow-sm focus:border-orange focus:outline-none focus:ring-4 focus:ring-orange/15 sm:w-48"
+          >
+            <option value="">All Categories</option>
+            {categories.map((c) => (
+              <option key={c._id} value={c._id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
           <div className="w-full sm:w-80">
             <SearchBox
               endpoint="/product"
               dataKey="product"
-              placeholder="Search products by name…"
+              placeholder={
+                categoryFilter
+                  ? `Search in ${categories.find((c) => c._id === categoryFilter)?.name || "category"}…`
+                  : "Search all products by name…"
+              }
               onSearch={handleSearch}
+              extraParams={categoryFilter ? { category: categoryFilter } : undefined}
               renderMeta={(p) => [p.sku, p.price != null ? `₹${p.price}` : null].filter(Boolean).join(" · ")}
             />
           </div>

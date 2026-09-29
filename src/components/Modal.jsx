@@ -6,7 +6,7 @@ export default function Modal({ title, onClose, children, wide }) {
       <div
         className={`max-h-[90vh] w-full ${
           wide ? "max-w-2xl" : "max-w-md"
-        } overflow-y-auto rounded-lg bg-white shadow-xl`}
+        } overflow-y-auto overflow-x-hidden rounded-lg bg-white shadow-xl`}
       >
         <div className="flex items-center justify-between border-b border-zinc-200 px-5 py-3">
           <h2 className="text-base font-semibold text-tertiary">{title}</h2>

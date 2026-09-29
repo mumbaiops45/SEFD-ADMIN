@@ -2,8 +2,9 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { api } from "@/lib/api";
-import { Eye } from "lucide-react";
+import { Eye, Lock, AlertTriangle } from "lucide-react";
 import Modal from "@/components/Modal";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import {
   ORDER_STATUSES,
   PAYMENT_STATUSES,
@@ -29,6 +30,10 @@ export default function OrdersPage() {
   const [page, setPage] = useState(1);
   const [modal, setModal] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState(null);
+  const [confirmStatus, setConfirmStatus] = useState(null);
+  const [statusError, setStatusError] = useState("");
+  const [acknowledged, setAcknowledged] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -50,9 +55,20 @@ export default function OrdersPage() {
     load();
   }, [load]);
 
+  const openOrder = (order) => {
+    setPendingStatus(null);
+    setStatusError("");
+    setModal(order);
+  };
+
+  const cancelStatusChange = () => {
+    setConfirmStatus(null);
+    setPendingStatus(null);
+  };
+
   const updateStatus = async (order, newStatus) => {
     setSaving(true);
-    setError("");
+    setStatusError("");
     try {
       const res = await api.put(`/order/${order._id}/admin`, { status: newStatus });
       const updated = res?.data?.order;
@@ -60,10 +76,13 @@ export default function OrdersPage() {
         setRows((prev) => prev.map((o) => (o._id === updated._id ? updated : o)));
         setModal(updated);
       }
+      setPendingStatus(null);
     } catch (err) {
-      setError(err.message);
+      setStatusError(err.message);
     } finally {
       setSaving(false);
+      setConfirmStatus(null);
+      setPendingStatus(null);
     }
   };
 
@@ -152,7 +171,7 @@ export default function OrdersPage() {
                   <td data-label="Actions" className="px-4 py-3">
                     <div className="flex justify-end">
                       <button
-                        onClick={() => setModal(o)}
+                        onClick={() => openOrder(o)}
                         title="View"
                         aria-label="View"
                         className="rounded-md p-1.5 text-zinc-600 hover:bg-zinc-100"
@@ -175,18 +194,36 @@ export default function OrdersPage() {
           <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-md bg-navy/5 p-3 text-sm">
             <div>
               <span className="block text-xs font-medium text-zinc-500">Order Status</span>
-              <select
-                value={modal.status}
-                disabled={saving}
-                onChange={(e) => updateStatus(modal, e.target.value)}
-                className={`${selectCls} mt-1 py-1`}
-              >
-                {ORDER_STATUSES.map((s) => (
-                  <option key={s} value={s}>
-                    {formatLabel(s)}
-                  </option>
-                ))}
-              </select>
+              {modal.status === "DELIVERED" ? (
+                <div className="mt-1 flex items-center gap-2">
+                  <StatusBadge value="DELIVERED" />
+                  <span className="flex items-center gap-1 text-xs text-zinc-500">
+                    <Lock className="h-3.5 w-3.5" /> Locked — delivered orders can&apos;t change
+                  </span>
+                </div>
+              ) : (
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <select
+                    value={pendingStatus ?? modal.status}
+                    disabled={saving}
+                    onChange={(e) => {
+                      if (e.target.value === modal.status) return;
+                      setPendingStatus(e.target.value);
+                      setConfirmStatus(e.target.value);
+                      setAcknowledged(false);
+                    }}
+                    className={`${selectCls} py-1`}
+                  >
+                    {ORDER_STATUSES.map((s) => (
+                      <option key={s} value={s}>
+                        {formatLabel(s)}
+                      </option>
+                    ))}
+                  </select>
+                  {saving && <span className="text-xs text-zinc-500">Saving…</span>}
+                </div>
+              )}
+              {statusError && <p className="mt-1 text-xs text-tertiary">{statusError}</p>}
             </div>
             <div>
               <span className="block text-xs font-medium text-zinc-500">Payment</span>
@@ -265,6 +302,76 @@ export default function OrdersPage() {
             <div className="text-base font-bold text-navy">Total: {formatMoney(modal.total)}</div>
           </div>
         </Modal>
+      )}
+
+      {/* Normal status change */}
+      <ConfirmDialog
+        open={!!confirmStatus && !!modal && confirmStatus !== "DELIVERED"}
+        danger={false}
+        title="Change order status?"
+        message={
+          modal && confirmStatus
+            ? `Are you sure you want to change the status from ${formatLabel(modal.status)} to ${formatLabel(confirmStatus)}?`
+            : ""
+        }
+        confirmLabel="Yes, change status"
+        loading={saving}
+        onCancel={cancelStatusChange}
+        onConfirm={() => updateStatus(modal, confirmStatus)}
+      />
+
+      {/* DELIVERED: special, important alert */}
+      {confirmStatus === "DELIVERED" && modal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-md overflow-hidden rounded-xl bg-white shadow-2xl ring-4 ring-red-500/30">
+            <div className="flex flex-col items-center gap-2 bg-red-600 px-5 py-5 text-center text-white">
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20">
+                <AlertTriangle className="h-8 w-8" />
+              </span>
+              <h2 className="text-lg font-bold uppercase tracking-wide">Important — Final Action</h2>
+              <p className="text-sm text-white/90">Mark this order as DELIVERED?</p>
+            </div>
+            <div className="space-y-3 px-5 py-4 text-sm text-zinc-700">
+              <div className="flex items-center justify-center gap-2">
+                <StatusBadge value={modal.status} />
+                <span className="text-zinc-400">→</span>
+                <StatusBadge value="DELIVERED" />
+              </div>
+              <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-red-800">
+                Once an order is marked <b>DELIVERED</b>, its status is <b>locked permanently</b>.
+                You will <b>NOT</b> be able to change it again.
+              </p>
+              <p className="break-all text-xs text-zinc-500">Order: {orderNumber(modal)}</p>
+              <label className="flex items-start gap-2 rounded-md bg-zinc-50 px-3 py-2">
+                <input
+                  type="checkbox"
+                  checked={acknowledged}
+                  onChange={(e) => setAcknowledged(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 accent-red-600"
+                />
+                <span>I understand this cannot be undone.</span>
+              </label>
+            </div>
+            <div className="flex justify-end gap-2 border-t border-zinc-100 bg-zinc-50 px-5 py-3">
+              <button
+                type="button"
+                onClick={cancelStatusChange}
+                disabled={saving}
+                className="rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => updateStatus(modal, "DELIVERED")}
+                disabled={!acknowledged || saving}
+                className="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-40"
+              >
+                {saving ? "Please wait…" : "Yes, mark delivered"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

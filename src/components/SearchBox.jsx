@@ -6,7 +6,8 @@ import { api } from "@/lib/api";
 
 // Search input with a live suggestion dropdown. Typing (debounced) filters the
 // page via onSearch and lists matching items fetched from `endpoint?keyword=`.
-export default function SearchBox({ endpoint, dataKey, placeholder, onSearch, renderMeta }) {
+export default function SearchBox({ endpoint, dataKey, placeholder, onSearch, renderMeta, extraParams }) {
+  const extraKey = JSON.stringify(extraParams || {});
   const [text, setText] = useState("");
   const [items, setItems] = useState([]);
   const [open, setOpen] = useState(false);
@@ -28,7 +29,7 @@ export default function SearchBox({ endpoint, dataKey, placeholder, onSearch, re
       }
       setSearching(true);
       try {
-        const res = await api.get(endpoint, { params: { keyword, page: 1, limit: 8 } });
+        const res = await api.get(endpoint, { params: { ...JSON.parse(extraKey), keyword, page: 1, limit: 8 } });
         const list = res?.data?.[dataKey];
         setItems((Array.isArray(list) ? list : []).slice(0, 8));
       } catch {
@@ -39,7 +40,7 @@ export default function SearchBox({ endpoint, dataKey, placeholder, onSearch, re
     }, 300);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [text, endpoint, dataKey]);
+  }, [text, endpoint, dataKey, extraKey]);
 
   useEffect(() => {
     const close = (e) => {
