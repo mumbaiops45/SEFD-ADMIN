@@ -80,11 +80,12 @@ export default function Sidebar({ open, onClose }) {
         open ? "translate-x-0" : "-translate-x-full"
       }`}
     >
-      <div className="flex h-16 items-center gap-2 border-b border-white/10 px-5">
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange text-sm font-bold text-navy">
-          S
+      <div className="flex h-20 items-center gap-3 border-b border-white/10 px-4">
+        <span className="flex h-14 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white p-1">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo/logo-1.webp" alt="SFED logo" className="h-full w-full object-contain" />
         </span>
-        <span className="text-lg font-semibold tracking-tight">SFED Admin</span>
+        <span className="text-lg font-semibold tracking-tight">Admin</span>
         <button onClick={onClose} className="ml-auto rounded-md p-1 text-white/70 hover:bg-white/10 md:hidden" aria-label="Close menu">
           ✕
         </button>

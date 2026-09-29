@@ -7,7 +7,7 @@ export default function Header({ onMenu }) {
   const initial = user?.email?.[0]?.toUpperCase() || "A";
 
   return (
-    <header className="flex h-16 items-center justify-between border-b border-zinc-200 bg-white px-4 md:px-6">
+    <header className="flex h-20 items-center justify-between border-b border-zinc-200 bg-white px-4 md:px-6">
       <button onClick={onMenu} className="rounded-md p-2 text-navy hover:bg-zinc-100 md:invisible" aria-label="Open menu">
         <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" stroke="currentColor" strokeWidth="2">
           <path d="M4 6h16M4 12h16M4 18h16" />

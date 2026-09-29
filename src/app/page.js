@@ -49,10 +49,11 @@ export default function LoginPage() {
 
         <div className="relative">
           <div className="mb-10 flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-orange text-lg font-bold text-navy">
-              S
-            </span>
-            <span className="text-xl font-semibold tracking-tight">SFED Admin</span>
+            <span className="flex h-16 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white p-1">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo/logo-1.webp" alt="SFED logo" className="h-full w-full object-contain" />
+        </span>
+            <span className="text-xl font-semibold tracking-tight">Admin</span>
           </div>
 
           <span className="mb-6 inline-block w-fit rounded-full border border-orange/40 bg-orange/10 px-3 py-1 text-xs font-semibold tracking-wide text-orange-soft">
@@ -88,10 +89,11 @@ export default function LoginPage() {
       <div className="flex flex-1 items-center justify-center overflow-y-auto bg-white px-6 py-8">
         <div className="w-full max-w-sm">
           <div className="mb-6 flex items-center gap-3 md:hidden">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange text-base font-bold text-navy">
-              S
-            </span>
-            <span className="text-lg font-semibold tracking-tight text-navy">SFED Admin</span>
+            <span className="flex h-14 w-20 border border-zinc-200 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white p-0.5">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo/logo-1.webp" alt="SFED logo" className="h-full w-full object-contain" />
+        </span>
+            <span className="text-lg font-semibold tracking-tight text-navy">Admin</span>
           </div>
 
           <form

@@ -14,6 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "SFED Admin",
+  icons: { icon: "/logo/logo-1.webp" },
   description: "SFED store admin panel",
 };
 
