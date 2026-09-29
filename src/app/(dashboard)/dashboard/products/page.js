@@ -5,6 +5,7 @@ import { api } from "@/lib/api";
 import DataTable from "@/components/DataTable";
 import Modal from "@/components/Modal";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import SearchBox from "@/components/SearchBox";
 import DetailView from "@/components/DetailView";
 import ProductMediaManager from "@/components/ProductMediaManager";
 
@@ -237,13 +238,21 @@ export default function ProductsPage() {
 
   const PAGE_SIZE = 8;
   const [page, setPage] = useState(1);
+  const [keyword, setKeyword] = useState("");
+
+  const handleSearch = useCallback((k) => {
+    setKeyword(k);
+    setPage(1);
+  }, []);
 
   const load = useCallback(async (pageNum) => {
     setLoading(true);
     setError("");
     try {
       const [productRes, categoryRes] = await Promise.all([
-        api.get(`/product?page=${pageNum}&limit=${PAGE_SIZE}`),
+        api.get("/product", {
+          params: { page: pageNum, limit: PAGE_SIZE, ...(keyword ? { keyword } : {}) },
+        }),
         api.get("/category"),
       ]);
       setRows(productRes?.data?.product || []);
@@ -253,7 +262,7 @@ export default function ProductsPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [keyword]);
 
   useEffect(() => {
     load(page);
@@ -307,12 +316,23 @@ export default function ProductsPage() {
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-xl font-semibold text-tertiary">Products</h1>
-        <button
-          onClick={() => setModal({ mode: "create" })}
-          className="rounded-md bg-orange px-4 py-2 text-sm font-semibold text-navy hover:bg-orange-deep hover:text-white"
-        >
-          + Add Product
-        </button>
+        <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:flex-nowrap">
+          <div className="w-full sm:w-80">
+            <SearchBox
+              endpoint="/product"
+              dataKey="product"
+              placeholder="Search products by name…"
+              onSearch={handleSearch}
+              renderMeta={(p) => [p.sku, p.price != null ? `₹${p.price}` : null].filter(Boolean).join(" · ")}
+            />
+          </div>
+          <button
+            onClick={() => setModal({ mode: "create" })}
+            className="shrink-0 rounded-md bg-orange px-4 py-2 text-sm font-semibold text-navy hover:bg-orange-deep hover:text-white"
+          >
+            + Add Product
+          </button>
+        </div>
       </div>
 
       {error && (

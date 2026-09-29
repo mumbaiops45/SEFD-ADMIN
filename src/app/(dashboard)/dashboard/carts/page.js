@@ -36,7 +36,9 @@ export default function CartsPage() {
     try {
       const res = await api.get("/cart/admin");
       const payload = res?.data?.carts ?? res?.data?.cart;
-      setRows(Array.isArray(payload) ? payload : payload ? [payload] : []);
+      const list = Array.isArray(payload) ? payload : payload ? [payload] : [];
+      // only carts that still have products in them
+      setRows(list.filter((c) => c.items?.length > 0));
     } catch (err) {
       setError(err.message);
     } finally {

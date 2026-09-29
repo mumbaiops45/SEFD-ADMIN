@@ -6,6 +6,7 @@ import DataTable from "@/components/DataTable";
 import Modal from "@/components/Modal";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import DetailView from "@/components/DetailView";
+import SearchBox from "@/components/SearchBox";
 
 const slugify = (s) =>
   s
@@ -148,19 +149,20 @@ export default function CategoriesPage() {
   const [modal, setModal] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [keyword, setKeyword] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await api.get("/category");
+      const res = await api.get("/category", { params: keyword ? { keyword } : {} });
       setRows(res?.data?.category || []);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [keyword]);
 
   useEffect(() => {
     load();
@@ -202,12 +204,23 @@ export default function CategoriesPage() {
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-xl font-semibold text-tertiary">Categories</h1>
-        <button
-          onClick={() => setModal({ mode: "create" })}
-          className="rounded-md bg-orange px-4 py-2 text-sm font-semibold text-navy hover:bg-orange-deep hover:text-white"
-        >
-          + Add Category
-        </button>
+        <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:flex-nowrap">
+          <div className="w-full sm:w-80">
+            <SearchBox
+              endpoint="/category"
+              dataKey="category"
+              placeholder="Search categories by name…"
+              onSearch={setKeyword}
+              renderMeta={(c) => (c.isActive ? "Active" : "Inactive")}
+            />
+          </div>
+          <button
+            onClick={() => setModal({ mode: "create" })}
+            className="shrink-0 rounded-md bg-orange px-4 py-2 text-sm font-semibold text-navy hover:bg-orange-deep hover:text-white"
+          >
+            + Add Category
+          </button>
+        </div>
       </div>
 
       {error && (

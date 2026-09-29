@@ -139,7 +139,7 @@ export default function OrdersPage() {
                     <div className="text-xs text-zinc-500">{o.shippingAddress?.phone}</div>
                   </td>
                   <td data-label="Items" className="px-4 py-3 text-zinc-700">
-                    {o.items?.reduce((n, it) => n + it.quantity, 0) || 0}
+                    {new Set(o.items?.map((it) => String(it.product))).size}
                   </td>
                   <td data-label="Total" className="px-4 py-3 font-bold text-navy">{formatMoney(o.total)}</td>
                   <td data-label="Status" className="px-4 py-3">
