@@ -13,6 +13,12 @@ const TYPE_LABELS = { Hero: "Hero", MIDDLE_BANNER: "Middle Banner" };
 const inputCls =
   "w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-orange focus:outline-none focus:ring-2 focus:ring-orange/20";
 
+// CTA links are site paths only: "shop", "https://site.com/shop" → "/shop".
+const toPath = (value) => {
+  const v = value.trim().replace(/^https?:\/\/[^/]+/i, "");
+  return `/${v.replace(/^\/+/, "")}`;
+};
+
 const columns = [
   {
     key: "url",
@@ -178,11 +184,17 @@ function BannerForm({ initial, nextOrderFor, onCancel, onSubmit }) {
   const [ctaUrl, setCtaUrl] = useState(initial?.ctaUrl || "");
   const [isActive, setIsActive] = useState(initial?.isActive ?? true);
   const [file, setFile] = useState(null);
+  const [mobileFile, setMobileFile] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   const preview = useMemo(() => (file ? URL.createObjectURL(file) : initial?.url || ""), [file, initial]);
   useEffect(() => () => file && URL.revokeObjectURL(preview), [file, preview]);
+  const mobilePreview = useMemo(
+    () => (mobileFile ? URL.createObjectURL(mobileFile) : initial?.mobileUrl || ""),
+    [mobileFile, initial]
+  );
+  useEffect(() => () => mobileFile && URL.revokeObjectURL(mobilePreview), [mobileFile, mobilePreview]);
 
   const handleType = (t) => {
     setType(t);
@@ -193,6 +205,10 @@ function BannerForm({ initial, nextOrderFor, onCancel, onSubmit }) {
     e.preventDefault();
     if (!editing && !file) {
       setError("Please choose a banner image");
+      return;
+    }
+    if (!editing && !mobileFile) {
+      setError("Please choose a mobile banner image");
       return;
     }
     setError("");
@@ -208,9 +224,10 @@ function BannerForm({ initial, nextOrderFor, onCancel, onSubmit }) {
       fd.append("description", description);
       fd.append("descriptionColor", descriptionColor);
       fd.append("ctaText", ctaText);
-      fd.append("ctaUrl", ctaUrl);
+      fd.append("ctaUrl", ctaUrl.trim() ? toPath(ctaUrl) : "");
       fd.append("isActive", String(isActive));
       if (file) fd.append("image", file);
+      if (mobileFile) fd.append("mobileImage", mobileFile);
       await onSubmit(fd);
     } catch (err) {
       setError(err.message || "Something went wrong");
@@ -283,6 +300,33 @@ function BannerForm({ initial, nextOrderFor, onCancel, onSubmit }) {
         {editing && <p className="mt-1 text-xs text-zinc-500">Leave empty to keep the current image.</p>}
       </div>
 
+      <div>
+        <label className="mb-1 block text-sm font-medium text-zinc-700">
+          Mobile Image {!editing && <span className="text-tertiary">*</span>}
+        </label>
+        <div className="flex items-start gap-3">
+          {mobilePreview && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={mobilePreview}
+              alt="mobile preview"
+              className="h-32 w-20 shrink-0 rounded-md border border-zinc-200 object-cover"
+            />
+          )}
+          <div className="flex-1">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setMobileFile(e.target.files?.[0] || null)}
+              className="block w-full text-sm text-zinc-600 file:mr-3 file:rounded-md file:border-0 file:bg-orange/10 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-orange-deep hover:file:bg-orange/20"
+            />
+            {editing && (
+              <p className="mt-1 text-xs text-zinc-500">Leave empty to keep the current mobile image.</p>
+            )}
+          </div>
+        </div>
+      </div>
+
       <TextWithColor label="Title 1" value={title1} onChange={setTitle1} color={color1} onColor={setColor1} />
       <TextWithColor label="Title 2" value={title2} onChange={setTitle2} color={color2} onColor={setColor2} />
       <TextWithColor
@@ -305,13 +349,22 @@ function BannerForm({ initial, nextOrderFor, onCancel, onSubmit }) {
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700">Button Link (CTA URL)</label>
-          <input
-            value={ctaUrl}
-            onChange={(e) => setCtaUrl(e.target.value)}
-            placeholder="e.g. /products or https://…"
-            className={inputCls}
-          />
+          <label className="mb-1 block text-sm font-medium text-zinc-700">Button Link (page path)</label>
+          <div className="flex items-stretch">
+            <span className="flex items-center rounded-l-md border border-r-0 border-zinc-300 bg-zinc-50 px-3 text-sm text-zinc-500">
+              /
+            </span>
+            <input
+              value={ctaUrl.replace(/^\/+/, "")}
+              onChange={(e) => setCtaUrl(e.target.value)}
+              onBlur={() => setCtaUrl((v) => (v.trim() ? toPath(v) : ""))}
+              placeholder="shop"
+              className={`${inputCls} rounded-l-none`}
+            />
+          </div>
+          <p className="mt-1 text-xs text-zinc-500">
+            Only the part after the domain, e.g. <b>shop</b> or <b>shop?category=jute-products</b>.
+          </p>
         </div>
       </div>
 
@@ -490,6 +543,7 @@ export default function BannersPage() {
                 ["ctaUrl", modal.row.ctaUrl],
                 ["isActive", modal.row.isActive ? "Yes" : "No"],
                 ["url", modal.row.url],
+                ["mobileUrl", modal.row.mobileUrl],
                 ["createdAt", formatDate(modal.row.createdAt)],
                 ["updatedAt", formatDate(modal.row.updatedAt)],
               ].map(([key, value, color]) => (
