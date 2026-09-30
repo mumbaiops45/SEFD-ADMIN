@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 const FEATURES = ["Product catalog with images", "Category management", "Admin-only access control"];
@@ -11,6 +12,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -115,14 +117,24 @@ export default function LoginPage() {
             />
 
             <label className="mb-1.5 block text-sm font-medium text-zinc-700">Password</label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="mb-5 w-full rounded-lg border border-zinc-300 px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-orange focus:ring-2 focus:ring-orange/20"
-            />
+            <div className="relative mb-5">
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full rounded-lg border border-zinc-300 px-3.5 py-2.5 pr-10 text-sm outline-none transition-colors focus:border-orange focus:ring-2 focus:ring-orange/20"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((s) => !s)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="absolute inset-y-0 right-0 flex items-center px-3 text-zinc-500 hover:text-navy"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
 
             {error && (
               <p className="mb-4 rounded-lg border border-tertiary/30 bg-tertiary/10 px-3.5 py-2.5 text-sm text-tertiary-deep">

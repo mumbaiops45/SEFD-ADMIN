@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Truck, GalleryHorizontal } from "lucide-react";
+import { Truck, GalleryHorizontal, UserCircle } from "lucide-react";
 
 const ICONS = {
   dashboard: (
@@ -49,6 +49,7 @@ const ICONS = {
   ),
   shipping: <Truck className="h-4.5 w-4.5" strokeWidth={1.8} />,
   banners: <GalleryHorizontal className="h-4.5 w-4.5" strokeWidth={1.8} />,
+  profile: <UserCircle className="h-4.5 w-4.5" strokeWidth={1.8} />,
   payments: (
     <svg viewBox="0 0 24 24" fill="none" className="h-4.5 w-4.5" stroke="currentColor" strokeWidth="1.8">
       <rect x="2.5" y="5.5" width="19" height="13" rx="2" />
@@ -67,6 +68,7 @@ const NAV = [
   { href: "/dashboard/shipping", label: "Shipping", icon: "shipping" },
   { href: "/dashboard/carts", label: "Abandoned Cart", icon: "carts" },
   { href: "/dashboard/users", label: "Users", icon: "users" },
+  { href: "/dashboard/profile", label: "Profile", icon: "profile" },
 ];
 
 export default function Sidebar({ open, onClose }) {

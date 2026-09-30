@@ -85,3 +85,21 @@ body {
     overflow: visible !important;
   }
 }
+
+/* Pointer cursor on every clickable element */
+button:not(:disabled),
+[role="button"],
+a[href],
+select:not(:disabled),
+label:has(input[type="file"]),
+input[type="file"],
+input[type="checkbox"],
+input[type="radio"],
+input[type="color"],
+summary {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}

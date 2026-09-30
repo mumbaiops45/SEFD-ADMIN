@@ -10,6 +10,7 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [ready, setReady] = useState(false);
+  const [profile, setProfile] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -45,6 +46,20 @@ export function AuthProvider({ children }) {
     return nextUser;
   }, []);
 
+  const refreshProfile = useCallback(async () => {
+    try {
+      const res = await api.get("/user/profile");
+      setProfile(res?.data?.user || null);
+    } catch {
+      setProfile(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user) refreshProfile();
+    else setProfile(null);
+  }, [user, refreshProfile]);
+
   const logout = useCallback(() => {
     localStorage.removeItem("sfed_token");
     localStorage.removeItem("sfed_email");
@@ -53,7 +68,7 @@ export function AuthProvider({ children }) {
   }, [router]);
 
   return (
-    <AuthContext.Provider value={{ user, ready, login, logout }}>
+    <AuthContext.Provider value={{ user, ready, login, logout, profile, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );

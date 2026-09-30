@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Header({ onMenu }) {
-  const { user, logout } = useAuth();
-  const initial = user?.email?.[0]?.toUpperCase() || "A";
+  const { user, logout, profile } = useAuth();
+  const displayName = profile?.name || user?.email || "Admin";
+  const initial = displayName[0]?.toUpperCase() || "A";
 
   return (
     <header className="flex h-20 items-center justify-between border-b border-zinc-200 bg-white px-4 md:px-6">
@@ -14,12 +16,22 @@ export default function Header({ onMenu }) {
         </svg>
       </button>
       <div className="flex min-w-0 items-center gap-3 md:gap-4">
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy text-xs font-semibold text-orange">
-            {initial}
+        <Link href="/dashboard/profile" className="flex min-w-0 items-center gap-2.5 rounded-lg px-1.5 py-1 hover:bg-zinc-100">
+          {profile?.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={profile.image} alt={displayName} className="h-9 w-9 shrink-0 rounded-full object-cover" />
+          ) : (
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-navy text-xs font-semibold text-orange">
+              {initial}
+            </span>
+          )}
+          <span className="hidden min-w-0 leading-tight sm:block">
+            <span className="block truncate text-sm font-semibold text-navy">{displayName}</span>
+            {profile?.name && user?.email && (
+              <span className="block truncate text-xs text-zinc-500">{user.email}</span>
+            )}
           </span>
-          <span className="hidden truncate text-sm text-zinc-600 sm:inline">{user?.email}</span>
-        </div>
+        </Link>
         <button
           onClick={logout}
           className="rounded-lg bg-orange px-3.5 py-1.5 text-sm font-medium text-navy transition-colors hover:bg-orange-deep hover:text-white"
