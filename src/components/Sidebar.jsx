@@ -67,6 +67,7 @@ const NAV = [
   { href: "/dashboard/banners", label: "Banners", icon: "banners" },
   { href: "/dashboard/shipping", label: "Shipping", icon: "shipping" },
   { href: "/dashboard/carts", label: "Abandoned Cart", icon: "carts" },
+  { href: "/dashboard/customers", label: "Customers", icon: "users" },
   { href: "/dashboard/users", label: "Users", icon: "users" },
   { href: "/dashboard/profile", label: "Profile", icon: "profile" },
 ];

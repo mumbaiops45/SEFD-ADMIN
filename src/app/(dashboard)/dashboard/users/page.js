@@ -5,6 +5,9 @@ import { api } from "@/lib/api";
 import DataTable from "@/components/DataTable";
 import Modal from "@/components/Modal";
 import DetailView from "@/components/DetailView";
+import { Pager } from "@/lib/orders";
+
+const LIMIT = 10;
 
 const columns = [
   { key: "name", label: "Name" },
@@ -107,19 +110,20 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [modal, setModal] = useState(null);
+  const [page, setPage] = useState(1);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await api.get("/user");
+      const res = await api.get("/user", { params: { page, limit: LIMIT } });
       setRows(res?.data?.user || []);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page]);
 
   useEffect(() => {
     load();
@@ -151,6 +155,8 @@ export default function UsersPage() {
           onDelete={null}
         />
       )}
+
+      <Pager page={page} setPage={setPage} hasNext={rows.length === LIMIT} loading={loading} />
 
       {modal?.mode === "edit" && (
         <Modal title="Edit User" onClose={() => setModal(null)} wide>
